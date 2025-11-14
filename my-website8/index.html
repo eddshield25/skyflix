@@ -138,39 +138,77 @@
     </section>
   </main>
 
-  <!-- Video Modal -->
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="modal-content">
-      <button class="close-btn" onclick="closeModal()" aria-label="Close movie details">
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="modal-body">
-        <div class="modal-poster-container">
-          <img id="modal-image" src="" alt="Poster image" class="modal-poster" />
-          <div class="poster-overlay">
-            <button class="btn btn-play" onclick="playTrailer()">
-              <i class="fas fa-play"></i> Play Trailer
-            </button>
-          </div>
-        </div>
-        <div class="modal-text">
-          <h2 id="modal-title" class="modal-item-title"></h2>
-          <div class="media-meta">
-            <div class="stars" id="modal-rating" aria-label="User rating"></div>
-            <span class="rating-text" id="modal-rating-text"></span>
-            <span class="release-date" id="modal-date"></span>
-          </div>
-          <p id="modal-description" class="modal-item-description"></p>
-          <div class="modal-actions">
-            <button class="btn btn-outline" onclick="addToFavorites()">
-              <i class="far fa-heart"></i> Add to Favorites
-            </button>
-            <button class="btn btn-outline" onclick="shareMedia()">
-              <i class="fas fa-share"></i> Share
-            </button>
-          </div>
+ <!-- Video Modal -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal()" aria-label="Close movie details">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Streaming Section - TOP -->
+    <div class="streaming-section">
+      <div class="server-selector">
+        <label for="server" class="server-label">Choose Streaming Server:</label>
+        <select id="server" onchange="changeServer()" class="server-select">
+          <option value="vidsrc.cc">Server 1 (Vidsrc.cc)</option>
+          <option value="vidsrc.net">Server 2 (Vidsrc.net)</option>
+          <option value="player.videasy.net">Server 3 (Videasy.net)</option>
+        </select>
+      </div>
+      <div class="video-container">
+        <iframe id="modal-video" width="100%" height="400" frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen class="modal-iframe" title="Video Player"></iframe>
+      </div>
+    </div>
+    
+    <!-- Details Section - MIDDLE -->
+    <div class="modal-body">
+      <div class="modal-poster-container">
+        <img id="modal-image" src="" alt="Poster image" class="modal-poster" />
+        <div class="poster-overlay">
+          <button class="btn btn-play" onclick="playTrailer()">
+            <i class="fas fa-play"></i> Play Trailer
+          </button>
         </div>
       </div>
+      <div class="modal-text">
+        <h2 id="modal-title" class="modal-item-title"></h2>
+        <div class="media-meta">
+          <div class="stars" id="modal-rating" aria-label="User rating"></div>
+          <span class="rating-text" id="modal-rating-text"></span>
+          <span class="release-date" id="modal-date"></span>
+        </div>
+        <p id="modal-description" class="modal-item-description"></p>
+        <div class="modal-actions">
+          <button class="btn btn-outline" onclick="addToFavorites()">
+            <i class="far fa-heart"></i> Add to Favorites
+          </button>
+          <button class="btn btn-outline" onclick="shareMedia()">
+            <i class="fas fa-share"></i> Share
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Season and Episode Selector - BOTTOM (for TV series) -->
+    <div class="season-episode-selector" id="season-episode-selector">
+      <div class="selector-nav">
+        <button class="selector-nav-btn" id="prev-season-btn" onclick="changeSeason(-1)">
+          <i class="fas fa-chevron-left"></i> Previous Season
+        </button>
+        <div class="current-season" id="current-season-text">Season 1</div>
+        <button class="selector-nav-btn" id="next-season-btn" onclick="changeSeason(1)">
+          Next Season <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      <div class="selector-title">Episodes</div>
+      <div class="selector-grid" id="episodes-grid">
+        <!-- Episodes will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div>
       
       <!-- Season and Episode Selector (for TV series) -->
       <div class="season-episode-selector" id="season-episode-selector">
