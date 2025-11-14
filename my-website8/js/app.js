@@ -329,6 +329,13 @@ function createMediaCard(item) {
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
   
+  // Extract year from release_date or first_air_date
+  const releaseYear = item.release_date 
+    ? new Date(item.release_date).getFullYear() 
+    : item.first_air_date 
+    ? new Date(item.first_air_date).getFullYear() 
+    : 'N/A';
+  
   card.innerHTML = `
     <img src="${API_CONFIG.IMG_URL}${item.poster_path}" 
          alt="Poster for ${item.title || item.name}" 
@@ -338,6 +345,7 @@ function createMediaCard(item) {
       <div class="media-meta">
         <div class="stars">${renderRating(item.vote_average)}</div>
         <span>${(item.vote_average / 2).toFixed(1)}</span>
+        ${releaseYear !== 'N/A' ? `<span class="release-year">${releaseYear}</span>` : ''}
       </div>
     </div>
   `;
