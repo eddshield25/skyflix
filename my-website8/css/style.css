@@ -165,6 +165,20 @@ body {
   justify-content: space-between;
 }
 
+/* Logo Link Styles */
+.logo-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}
+
+.logo-link:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Logo Styles */
 .logo {
   display: flex;
   align-items: center;
@@ -177,6 +191,7 @@ body {
 
 .logo i {
   font-size: 28px;
+  text-decoration: none;
 }
 
 .nav-links {
