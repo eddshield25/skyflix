@@ -1,4 +1,4 @@
-# StreamFlix
+# SkyFlix
 
 A modern, responsive streaming platform built with vanilla JavaScript that showcases trending movies, TV shows, and anime.
 
