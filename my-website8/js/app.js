@@ -392,7 +392,8 @@ function renderRating(voteAverage) {
  */
 async function showDetails(item) {
   currentItem = item;
-  
+  // Scroll to top of modal when opened
+document.querySelector('.modal-content').scrollTop = 0;
   // Reset season/episode state
   currentSeasons = [];
   currentSeasonNumber = 1;
