@@ -408,12 +408,18 @@ async function showDetails(item) {
   document.getElementById('modal-image').alt = 
     `Poster for ${item.title || item.name}`;
   
-  // Set additional metadata
-  document.getElementById('modal-rating').innerHTML = renderRating(item.vote_average);
-  document.getElementById('modal-rating-text').textContent = 
-    `${(item.vote_average / 2).toFixed(1)}/5`;
-  document.getElementById('modal-date').textContent = 
-    formatDate(item.release_date || item.first_air_date);
+ // Set additional metadata
+const releaseYear = item.release_date 
+  ? new Date(item.release_date).getFullYear() 
+  : item.first_air_date 
+  ? new Date(item.first_air_date).getFullYear() 
+  : 'N/A';
+
+document.getElementById('modal-rating').innerHTML = renderRating(item.vote_average);
+document.getElementById('modal-rating-text').innerHTML = 
+  `${(item.vote_average / 2).toFixed(1)}/5${releaseYear !== 'N/A' ? `<span class="modal-year">${releaseYear}</span>` : ''}`;
+document.getElementById('modal-date').textContent = 
+  formatDate(item.release_date || item.first_air_date);
   
   // Handle TV series season/episode selector
   const seasonEpisodeSelector = document.getElementById('season-episode-selector');
