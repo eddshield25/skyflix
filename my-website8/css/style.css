@@ -443,7 +443,35 @@ body {
 .stars {
   color: gold;
 }
+/* Media Meta - Add year styling */
+.media-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
 
+.release-year {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Modal year styling */
+.modal-year {
+  font-size: 1rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-left: 8px;
+}
 /* Modal */
 .modal {
   position: fixed;
