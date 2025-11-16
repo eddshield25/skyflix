@@ -1,6 +1,6 @@
 // --- Configuration Constants ---
 const API_CONFIG = {
-  KEY: '420dd26414b8bcb319a5d49051b6ac25',
+  KEY: '9220d85da653eaa9484bdfafd973a3ba',
   BASE_URL: 'https://api.themoviedb.org/3',
   IMG_URL: 'https://image.tmdb.org/t/p/w500',
   IMG_ORIGINAL: 'https://image.tmdb.org/t/p/original',
