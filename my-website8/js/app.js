@@ -494,17 +494,36 @@ function updateSeasonNavigation() {
 // --- API Fetching Functions ---
 
 /**
- * Fetches trending movies or TV shows from TMDB.
+ * Fetches trending movies or TV shows from TMDB with multiple pages.
  */
-async function fetchTrending(type) {
+async function fetchTrending(type, pages = 2) {
   try {
-    const response = await fetch(
-      `${API_CONFIG.BASE_URL}/trending/${type}/week?api_key=${API_CONFIG.KEY}`
-    );
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    let allResults = [];
     
-    const data = await response.json();
-    return data.results || [];
+    // Fetch multiple pages to get more than 20 items
+    for (let page = 1; page <= pages; page++) {
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}/trending/${type}/week?api_key=${API_CONFIG.KEY}&page=${page}`
+      );
+      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      if (data.results) {
+        allResults = allResults.concat(data.results);
+      }
+      
+      // Small delay to be nice to the API
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    // Remove duplicates and items without posters
+    const uniqueResults = allResults.filter((item, index, self) =>
+      index === self.findIndex(i => i.id === item.id) &&
+      item.poster_path
+    );
+    
+    return uniqueResults;
   } catch (error) {
     console.error(`Error fetching trending ${type}:`, error);
     return [];
@@ -543,20 +562,44 @@ async function fetchTrendingAnime() {
 
 // --- DOM Manipulation / Display Functions ---
 
+// Add this variable at the top with other state variables
+let currentBannerItem = null;
+
 /**
- * Displays the hero banner with random content.
+ * Displays the hero banner with random content and stores the item.
  */
 function displayBanner(item) {
   const bannerElement = document.getElementById('banner');
   const titleElement = document.getElementById('banner-title');
   const descElement = document.getElementById('banner-description');
   
+  // Store the banner item globally
+  currentBannerItem = item;
+  
   if (item && item.backdrop_path) {
     bannerElement.style.backgroundImage = `url(${API_CONFIG.IMG_ORIGINAL}${item.backdrop_path})`;
-    titleElement.textContent = item.title || item.name || 'StreamFlix';
+    titleElement.textContent = item.title || item.name || 'SkyFlix';
     descElement.textContent = item.overview 
-      ? (item.overview.substring(0, 150) + '...') 
+      ? (item.overview.substring(0, 150) + (item.overview.length > 150 ? '...' : '')) 
       : 'Discover thousands of movies and TV shows';
+  } else {
+    // Fallback banner
+    bannerElement.style.backgroundImage = 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))';
+    titleElement.textContent = 'Welcome to SkyFlix';
+    descElement.textContent = 'Discover thousands of movies and TV shows';
+    currentBannerItem = null;
+  }
+}
+
+/**
+ * Starts watching the current banner movie
+ */
+function startWatchingBanner() {
+  if (currentBannerItem) {
+    showDetails(currentBannerItem);
+  } else {
+    // Fallback: open search modal if no banner movie
+    openSearchModal();
   }
 }
 
@@ -929,7 +972,7 @@ async function init() {
 
   try {
     const [movies, tvShows, anime] = await Promise.all([
-      fetchTrending('movie'),
+      fetchTrending('movie', 2), // Fetch 2 pages to get ~40 movies
       fetchTrending('tv'),
       fetchTrendingAnime()
     ]);
@@ -951,7 +994,9 @@ async function init() {
     setTimeout(hideLoading, 1000);
   }
 
-  // Expose functions globally
+
+
+// Expose functions globally
   window.closeModal = closeModal;
   window.changeServer = changeServer;
   window.openSearchModal = openSearchModal;
@@ -968,6 +1013,7 @@ async function init() {
   window.playTrailer = () => alert('Trailer feature coming soon!');
   window.addToFavorites = () => alert('Added to favorites!');
   window.shareMedia = () => alert('Share feature coming soon!');
+  window.startWatchingBanner = startWatchingBanner;
 }
 
 // Start the application when DOM is loaded
