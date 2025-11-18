@@ -23,6 +23,172 @@ function showLoading() {
   document.getElementById('loading-screen').classList.remove('hidden');
 }
 
+// --- Utility Functions ---
+
+/**
+ * Shows loading screen
+ */
+function showLoading() {
+  document.getElementById('loading-screen').classList.remove('hidden');
+}
+
+/**
+ * Hides loading screen
+ */
+function hideLoading() {
+  document.getElementById('loading-screen').classList.add('hidden');
+}
+
+/**
+ * Displays trending movies in 6x4 grid layout
+ */
+function displayTrendingMoviesGrid(items, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (!items || items.length === 0) {
+    container.innerHTML = `
+      <div class="empty-section" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+        <i class="fas fa-film" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+        <p>No trending movies available at the moment.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = '';
+  const moviesToShow = items.slice(0, 24); // Exactly 24 movies for 6x4 grid
+  
+  moviesToShow.forEach(item => {
+    const card = createTrendingMediaCard(item);
+    if (card) container.appendChild(card);
+  });
+}
+
+/**
+ * Creates a trending media card element for the 6x4 grid
+ */
+function createTrendingMediaCard(item) {
+  if (!item.poster_path) return null;
+
+  const card = document.createElement('div');
+  card.className = 'trending-media-card';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-label', `View details for ${item.title || item.name}`);
+  
+  // Extract year from release_date or first_air_date
+  const releaseYear = item.release_date 
+    ? new Date(item.release_date).getFullYear() 
+    : item.first_air_date 
+    ? new Date(item.first_air_date).getFullYear() 
+    : 'N/A';
+  
+  const rating = (item.vote_average / 2).toFixed(1);
+  
+  card.innerHTML = `
+    <div class="trending-poster-container">
+      <img src="${API_CONFIG.IMG_URL}${item.poster_path}" 
+           alt="Poster for ${item.title || item.name}" 
+           class="trending-media-poster"
+           loading="lazy" 
+           onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDIwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMkQyRDJEIi8+CjxwYXRoIGQ9Ik03NSA5MEgxMjVWMTEwSDc1VjkwWk03NSAxMzBIMTI1VjE1MEg3NVYxMzBaTTc1IDE3MEgxMjVWMTkwSDc1VjE3MFoiIGZpbGw9IiM2QzZDNkMiLz4KPC9zdmc+'"/>
+      <div class="trending-quick-rating">
+        <i class="fas fa-star"></i>
+        <span>${rating}</span>
+      </div>
+      <div class="trending-overlay">
+        <button class="trending-play-btn" onclick="event.stopPropagation(); showDetails(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+          <i class="fas fa-play"></i>
+        </button>
+      </div>
+    </div>
+    <div class="trending-media-info">
+      <h3 class="trending-media-title">${item.title || item.name}</h3>
+      <div class="trending-media-meta">
+        <div class="trending-rating">
+          <span>${renderRating(item.vote_average)}</span>
+        </div>
+        ${releaseYear !== 'N/A' ? `<span class="trending-year">${releaseYear}</span>` : ''}
+      </div>
+    </div>
+  `;
+
+  // Add click event
+  card.onclick = () => showDetails(item);
+  card.onkeydown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      showDetails(item);
+    }
+  };
+
+  return card;
+}
+
+// ADD THE NEW FUNCTIONS RIGHT HERE:
+/**
+ * Sets up all event listeners
+ */
+function setupEventListeners() {
+  // Close modals on outside click
+  document.addEventListener('click', (e) => {
+    const modal = document.getElementById('modal');
+    const searchModal = document.getElementById('search-modal');
+    const disclaimerModal = document.getElementById('disclaimer-modal');
+    
+    if (e.target === modal) closeModal();
+    if (e.target === searchModal) closeSearchModal();
+    if (e.target === disclaimerModal) closeDisclaimerModal();
+  });
+
+  // Close modals on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      closeSearchModal();
+      closeDisclaimerModal();
+    }
+  });
+
+  // Show back-to-top button on scroll
+  window.addEventListener('scroll', () => {
+    const backToTop = document.getElementById('back-to-top');
+    const navbar = document.querySelector('.navbar');
+    
+    if (window.scrollY > 300) {
+      backToTop.style.display = 'flex';
+      navbar.classList.add('scrolled');
+    } else {
+      backToTop.style.display = 'none';
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  // Search on Enter key
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchTMDB();
+    });
+  }
+}
+
+/**
+ * Loads saved theme preference from localStorage
+ */
+function loadThemePreference() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  currentTheme = savedTheme;
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  // Update theme toggle icon
+  const themeIcon = document.querySelector('.theme-toggle i');
+  if (themeIcon) {
+    themeIcon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  }
+}
+
 /**
  * Hides loading screen
  */
@@ -95,6 +261,82 @@ function closeDisclaimerModal() {
   document.body.style.overflow = 'auto';
 }
 
+/**
+ * Sets up all event listeners
+ */
+function setupEventListeners() {
+  // Close modals on outside click
+  document.addEventListener('click', (e) => {
+    const modal = document.getElementById('modal');
+    const searchModal = document.getElementById('search-modal');
+    const disclaimerModal = document.getElementById('disclaimer-modal');
+    
+    if (e.target === modal) closeModal();
+    if (e.target === searchModal) closeSearchModal();
+    if (e.target === disclaimerModal) closeDisclaimerModal();
+  });
+
+  // Close modals on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      closeSearchModal();
+      closeDisclaimerModal();
+    }
+  });
+
+  // Show back-to-top button on scroll
+  window.addEventListener('scroll', () => {
+    const backToTop = document.getElementById('back-to-top');
+    const navbar = document.querySelector('.navbar');
+    
+    if (window.scrollY > 300) {
+      backToTop.style.display = 'flex';
+      navbar.classList.add('scrolled');
+    } else {
+      backToTop.style.display = 'none';
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  // Search on Enter key
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchTMDB();
+    });
+  }
+}
+
+/**
+ * Loads saved theme preference from localStorage
+ */
+function loadThemePreference() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  currentTheme = savedTheme;
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  // Update theme toggle icon
+  const themeIcon = document.querySelector('.theme-toggle i');
+  if (themeIcon) {
+    themeIcon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  }
+}
+
+/**
+ * Loads saved theme preference from localStorage
+ */
+function loadThemePreference() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  currentTheme = savedTheme;
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  // Update theme toggle icon
+  const themeIcon = document.querySelector('.theme-toggle i');
+  if (themeIcon) {
+    themeIcon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  }
+}
 // --- TV Series Season/Episode Functions ---
 
 /**
@@ -378,6 +620,92 @@ function displayList(items, containerId) {
 }
 
 /**
+ * Displays trending movies in 6x4 grid layout
+ */
+function displayTrendingMoviesGrid(items, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (!items || items.length === 0) {
+    container.innerHTML = `
+      <div class="empty-section" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+        <i class="fas fa-film" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+        <p>No trending movies available at the moment.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = '';
+  const moviesToShow = items.slice(0, 24); // Exactly 24 movies for 6x4 grid
+  
+  moviesToShow.forEach(item => {
+    const card = createTrendingMediaCard(item);
+    if (card) container.appendChild(card);
+  });
+}
+
+/**
+ * Creates a trending media card element for the 6x4 grid
+ */
+function createTrendingMediaCard(item) {
+  if (!item.poster_path) return null;
+
+  const card = document.createElement('div');
+  card.className = 'trending-media-card';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-label', `View details for ${item.title || item.name}`);
+  
+  // Extract year from release_date or first_air_date
+  const releaseYear = item.release_date 
+    ? new Date(item.release_date).getFullYear() 
+    : item.first_air_date 
+    ? new Date(item.first_air_date).getFullYear() 
+    : 'N/A';
+  
+  const rating = (item.vote_average / 2).toFixed(1);
+  
+  card.innerHTML = `
+    <div class="trending-poster-container">
+      <img src="${API_CONFIG.IMG_URL}${item.poster_path}" 
+           alt="Poster for ${item.title || item.name}" 
+           class="trending-media-poster"
+           loading="lazy" />
+      <div class="trending-quick-rating">
+        <i class="fas fa-star"></i>
+        <span>${rating}</span>
+      </div>
+      <div class="trending-overlay">
+        <button class="trending-play-btn" onclick="event.stopPropagation(); showDetails(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+          <i class="fas fa-play"></i>
+        </button>
+      </div>
+    </div>
+    <div class="trending-media-info">
+      <h3 class="trending-media-title">${item.title || item.name}</h3>
+      <div class="trending-media-meta">
+        <div class="trending-rating">
+          <span>${renderRating(item.vote_average)}</span>
+        </div>
+        ${releaseYear !== 'N/A' ? `<span class="trending-year">${releaseYear}</span>` : ''}
+      </div>
+    </div>
+  `;
+
+  // Add click event
+  card.onclick = () => showDetails(item);
+  card.onkeydown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      showDetails(item);
+    }
+  };
+
+  return card;
+}
+
+/**
  * Renders star rating based on vote average.
  */
 function renderRating(voteAverage) {
@@ -592,62 +920,6 @@ async function searchTMDB() {
 // --- Event Listeners and Initialization ---
 
 /**
- * Sets up event listeners.
- */
-function setupEventListeners() {
-  // Close modals on outside click
-  document.addEventListener('click', (e) => {
-    const modal = document.getElementById('modal');
-    const searchModal = document.getElementById('search-modal');
-    const disclaimerModal = document.getElementById('disclaimer-modal');
-    
-    if (e.target === modal) closeModal();
-    if (e.target === searchModal) closeSearchModal();
-    if (e.target === disclaimerModal) closeDisclaimerModal();
-  });
-
-  // Close modals on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeModal();
-      closeSearchModal();
-      closeDisclaimerModal();
-    }
-  });
-
-  // Show back-to-top button on scroll
-  window.addEventListener('scroll', () => {
-    const backToTop = document.getElementById('back-to-top');
-    const navbar = document.querySelector('.navbar');
-    
-    if (window.scrollY > 300) {
-      backToTop.style.display = 'flex';
-      navbar.classList.add('scrolled');
-    } else {
-      backToTop.style.display = 'none';
-      navbar.classList.remove('scrolled');
-    }
-  });
-
-  // Search on Enter key
-  document.getElementById('search-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') searchTMDB();
-  });
-}
-
-/**
- * Loads saved theme preference.
- */
-function loadThemePreference() {
-  const savedTheme = localStorage.getItem('theme') || 'dark';
-  currentTheme = savedTheme;
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  
-  const themeIcon = document.querySelector('.theme-toggle i');
-  themeIcon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-}
-
-/**
  * Main initialization function.
  */
 async function init() {
@@ -668,15 +940,15 @@ async function init() {
       displayBanner(randomMovie);
     }
 
-    // Display all lists
-    displayList(movies, 'movies-list');
+    // Display all lists - Trending Movies in 6x4 grid, others in scroller
+    displayTrendingMoviesGrid(movies, 'trending-movies-grid');
     displayList(tvShows, 'tvshows-list');
     displayList(anime, 'anime-list');
 
   } catch (error) {
     console.error('Initialization error:', error);
   } finally {
-    setTimeout(hideLoading, 1000); // Ensure loading screen shows briefly
+    setTimeout(hideLoading, 1000);
   }
 
   // Expose functions globally
