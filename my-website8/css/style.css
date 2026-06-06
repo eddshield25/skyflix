@@ -529,7 +529,7 @@ body {
 /* Responsive Grid for Trending Movies */
 @media (max-width: 1400px) {
   .trending-movies-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(10, 1fr);
     gap: 18px;
   }
 }
