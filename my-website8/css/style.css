@@ -396,7 +396,7 @@ body {
 /* 6x4 Grid Layout for Trending Movies ONLY */
 .trending-movies-grid {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
   padding: 20px 0;
 }
@@ -529,7 +529,7 @@ body {
 /* Responsive Grid for Trending Movies */
 @media (max-width: 1400px) {
   .trending-movies-grid {
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 18px;
   }
 }
