@@ -43,19 +43,17 @@
           <i class="fas fa-heart"></i> Favorites
         </a>
       </nav>
-      <div class="nav-actions">
-        <div class="search-container">
-          <input type="text" class="search-bar" placeholder="Search movies, shows..." 
-                 aria-label="Search for movies or shows" onfocus="openSearchModal()" />
-          <button class="search-icon" aria-label="Open search" onclick="openSearchModal()">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-        <button class="theme-toggle" aria-label="Toggle dark mode" onclick="toggleTheme()">
-          <i class="fas fa-moon"></i>
-        </button>
-      </div>
-    </div>
+<div class="modal-actions">
+  <button class="btn btn-outline" onclick="toggleFavorite()">
+    <i class="far fa-heart"></i> Add to Favorites
+  </button>
+  <button class="btn btn-outline" onclick="shareMedia()">
+    <i class="fas fa-share"></i> Share
+  </button>
+  <button class="btn btn-outline" onclick="playTrailer()">
+    <i class="fas fa-film"></i> Trailer
+  </button>
+</div>
   </header>
 
   <main>
