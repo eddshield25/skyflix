@@ -51,6 +51,13 @@
   <button class="search-icon" aria-label="Open search" onclick="openSearchModal()">
     <i class="fas fa-search"></i>
   </button>
+
+        <div class="search-input-container">
+  <i class="fas fa-search search-input-icon"></i>
+  <input type="text" id="search-input" placeholder="Search movies, TV shows, anime..." 
+         oninput="searchTMDB()" aria-label="Search input" 
+         autocomplete="off" />
+</div>
 </div>
 <div class="modal-actions">
   <button class="btn btn-outline" onclick="toggleFavorite()">
