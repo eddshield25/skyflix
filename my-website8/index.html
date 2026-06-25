@@ -43,6 +43,15 @@
           <i class="fas fa-heart"></i> Favorites
         </a>
       </nav>
+      <div class="search-container">
+  <input type="text" class="search-bar" placeholder="Search movies, shows..." 
+         aria-label="Search for movies or shows" 
+         onclick="openSearchModal()" 
+         readonly />
+  <button class="search-icon" aria-label="Open search" onclick="openSearchModal()">
+    <i class="fas fa-search"></i>
+  </button>
+</div>
 <div class="modal-actions">
   <button class="btn btn-outline" onclick="toggleFavorite()">
     <i class="far fa-heart"></i> Add to Favorites
