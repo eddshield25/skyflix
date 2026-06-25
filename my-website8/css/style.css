@@ -1561,3 +1561,147 @@ body {
     gap: 4px;
   }
 }
+/* Notification Toast */
+.notification-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--background-card);
+  color: var(--text-light);
+  padding: 16px 24px;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.3s ease;
+  min-width: 300px;
+  max-width: 90%;
+}
+
+.notification-toast.success {
+  border-color: var(--success-color);
+}
+
+.notification-toast.error {
+  border-color: var(--error-color);
+}
+
+.notification-toast.info {
+  border-color: var(--secondary-color);
+}
+
+.notification-toast.fade-out {
+  animation: slideDown 0.3s ease forwards;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.notification-content i {
+  font-size: 1.2rem;
+}
+
+.notification-toast.success i {
+  color: var(--success-color);
+}
+
+.notification-toast.error i {
+  color: var(--error-color);
+}
+
+.notification-toast.info i {
+  color: var(--secondary-color);
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.3s ease;
+}
+
+.notification-close:hover {
+  color: var(--text-light);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+}
+
+/* Favorite Badge */
+.favorite-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--primary-color);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  z-index: 2;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Media Poster Container */
+.media-poster-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+}
+
+.media-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.media-card:hover .media-poster {
+  transform: scale(1.1);
+}
+
+/* Responsive Fixes */
+@media (max-width: 480px) {
+  .notification-toast {
+    min-width: auto;
+    width: 90%;
+    bottom: 20px;
+  }
+  
+  .notification-content {
+    font-size: 0.9rem;
+  }
+}
